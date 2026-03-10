@@ -429,14 +429,14 @@ footer a:hover{color:var(--accent)}
           <th data-key="rank" class="sort-asc">#</th>
           <th data-key="model_display" data-type="str">Model</th>
           <th data-key="agent_display" data-type="str">Agent</th>
-          <th data-key="score" class="num-col">Score (%)</th>
-          <th data-key="precision" class="num-col">Precision (%)</th>
-          <th data-key="recall" class="num-col">Recall (%)</th>
-          <th data-key="resolve" class="num-col">Resolve (%)</th>
-          <th data-key="cost" class="num-col">Cost ($)</th>
-          <th data-key="out_tok_k" class="num-col has-tip" data-tip="Output Tokens (K)">Out Tok. (K)</th>
-          <th data-key="time_h" class="num-col">Time (h)</th>
-          <th data-key="turns" class="num-col">Turns</th>
+          <th data-key="score" class="num-col has-tip" data-tip="Average score per evolution range (%)">Score (%)</th>
+          <th data-key="precision" class="num-col has-tip" data-tip="Average precision per evolution range (%)">Precision (%)</th>
+          <th data-key="recall" class="num-col has-tip" data-tip="Average recall per evolution range (%)">Recall (%)</th>
+          <th data-key="resolve" class="num-col has-tip" data-tip="Average resolve rate per evolution range (%)">Resolve (%)</th>
+          <th data-key="cost" class="num-col has-tip" data-tip="Average cost per evolution range ($)">Cost ($)</th>
+          <th data-key="out_tok_k" class="num-col has-tip" data-tip="Average output tokens per evolution range (K)">Out Tok. (K)</th>
+          <th data-key="time_h" class="num-col has-tip" data-tip="Average time per evolution range (h)">Time (h)</th>
+          <th data-key="turns" class="num-col has-tip" data-tip="Average turns per evolution range">Turns</th>
         </tr>
       </thead>
       <tbody id="tbody"></tbody>
@@ -531,7 +531,7 @@ function renderChart() {
     plot_bgcolor: '#14141f',
     font: { color: '#e2e8f0', family: 'Inter, system-ui, sans-serif', size: 12 },
     xaxis: {
-      title: { text: 'Average Cost Per Problem (USD)', font: { size: 13 } },
+      title: { text: 'Average Cost Per Evolution Range (USD)', font: { size: 13 } },
       gridcolor: '#1c1c2b', zerolinecolor: '#1c1c2b',
       tickprefix: '$', tickfont: { size: 11 },
       range: [xMin - xPad, xMax + xPadR],
