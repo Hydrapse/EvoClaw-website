@@ -13,8 +13,8 @@ import pathlib
 import pandas as pd
 
 VIZ_DIR = pathlib.Path(__file__).resolve().parent
-PROJECT_ROOT = VIZ_DIR.parent.parent
-ANALYSIS_ROOT = PROJECT_ROOT / "analysis"
+AGENTBENCH_ROOT = pathlib.Path("/home/gangda/workspace/AgentBench")
+ANALYSIS_ROOT = AGENTBENCH_ROOT / "analysis"
 sys.path.insert(0, str(ANALYSIS_ROOT))
 
 from common import load_e2e, AGENT_MODEL_ORDER
@@ -292,15 +292,15 @@ body{background:var(--bg-0);color:var(--text-1);font-family:'Inter',system-ui,-a
 .container{max-width:1280px;margin:0 auto;padding:2.5rem 1.5rem}
 
 /* ── Header ────────────────────────────────────────────────── */
-.hero{text-align:center;padding:1.5rem 0 2.5rem}
+.hero{text-align:left;padding:1.5rem 0 2.5rem}
 .hero-title{font-size:2rem;font-weight:800;letter-spacing:-0.02em;margin-bottom:1.25rem}
 .hero-title .brand{
   background:linear-gradient(135deg,#6366f1 0%,#a78bfa 50%,#c4b5fd 100%);
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .hero-title .sep{color:var(--text-3);font-weight:400;margin:0 .15em}
 .hero-title .desc{color:var(--text-2);font-weight:400;font-size:.85em}
-.hero-desc{color:var(--text-3);font-size:.9rem;max-width:720px;margin:0 auto 1.25rem;line-height:1.7}
-.nav-btns{display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap}
+.hero-desc{color:var(--text-3);font-size:.9rem;margin:0 0 1.25rem;line-height:1.7}
+.nav-btns{display:flex;gap:.6rem;justify-content:flex-start;flex-wrap:wrap}
 .nav-btn{display:inline-flex;align-items:center;gap:.45rem;
   padding:.55rem 1.2rem;border-radius:8px;font-size:.875rem;font-weight:500;
   text-decoration:none;color:var(--text-2);background:var(--bg-2);
@@ -390,7 +390,7 @@ footer a:hover{color:var(--accent)}
   <h1 class="hero-title">
     <span class="brand">EvoClaw</span><span class="sep">:</span><span class="desc">Evaluating LLM Agents on Continuous Software Evolution</span>
   </h1>
-  <p class="hero-desc">EvoClaw evaluates how well frontier LLM agents can continuously evolve real-world software. Agents build customized software as a &ldquo;Claw&rdquo; to interact with environments, fully autonomously handling streaming requirements from end-users across extended sessions. Benchmarked on real-world evolution itineraries from open-source repositories.</p>
+  <p class="hero-desc">Long-running agents build customized software&mdash;a &ldquo;Claw&rdquo;&mdash;to interact with their environments. For practical use in complex, real-world tasks, these agents must fully and autonomously evolve this software in response to a continuous stream of end-user requirements. EvoClaw evaluates how well frontier LLM agents handle this continuous development, benchmarking them against real-world evolution itineraries from open-source repositories.</p>
   <nav class="nav-btns">
     <a class="nav-btn active" href="#leaderboard">
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2h8v5a4 4 0 01-8 0V2z"/><path d="M4 4H2.5a1 1 0 00-1 1v.5A2.5 2.5 0 004 8"/><path d="M12 4h1.5a1 1 0 011 1v.5A2.5 2.5 0 0112 8"/><path d="M6 11v2h4v-2"/><path d="M5 13h6"/></svg>
