@@ -639,31 +639,6 @@ function renderChart() {
     modeBarButtonsToRemove: ['lasso2d', 'select2d'],
   });
 
-  const chartEl = document.getElementById('chart');
-  const initXRange = xMax + xPadR - (xMin - xPad);
-  const initYRange = yMax + yPad - (yMin - yPad);
-  const BASE_FONT = 13, BASE_XSHIFT = 18;
-  let scaling = false;
-
-  chartEl.on('plotly_relayout', function(ev) {
-    if (scaling) return;
-    const xl = chartEl.layout.xaxis.range;
-    const yl = chartEl.layout.yaxis.range;
-    if (!xl || !yl) return;
-    const curXRange = xl[1] - xl[0];
-    const curYRange = yl[1] - yl[0];
-    const scale = Math.sqrt((initXRange / curXRange) * (initYRange / curYRange));
-    const newFont = Math.round(BASE_FONT * scale);
-    const newShift = Math.round(BASE_XSHIFT * scale);
-
-    const update = {};
-    annotations.forEach((a, i) => {
-      update['annotations[' + i + '].font.size'] = newFont;
-      update['annotations[' + i + '].xshift'] = a.xanchor === 'right' ? -newShift : newShift;
-    });
-    scaling = true;
-    Plotly.relayout(chartEl, update).then(() => { scaling = false; });
-  });
 }
 
 // ═══════════════════════════════════════════════════════════
