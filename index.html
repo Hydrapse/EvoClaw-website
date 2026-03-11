@@ -157,14 +157,14 @@ footer a:hover{color:var(--accent)}
           <th data-key="rank" class="sort-asc">#</th>
           <th data-key="model_display" data-type="str">Model</th>
           <th data-key="agent_display" data-type="str">Agent</th>
-          <th data-key="score" class="num-col has-tip" data-tip="Average score per evolution range (%)">Score (%)</th>
-          <th data-key="precision" class="num-col has-tip" data-tip="Average precision per evolution range (%)">Precision (%)</th>
-          <th data-key="recall" class="num-col has-tip" data-tip="Average recall per evolution range (%)">Recall (%)</th>
-          <th data-key="resolve" class="num-col has-tip" data-tip="Average resolve rate per evolution range (%)">Resolve (%)</th>
-          <th data-key="cost" class="num-col has-tip" data-tip="Average cost per evolution range ($)">Cost ($)</th>
-          <th data-key="out_tok_k" class="num-col has-tip" data-tip="Average output tokens per evolution range (K)">Out Tok. (K)</th>
-          <th data-key="time_h" class="num-col has-tip" data-tip="Average time per evolution range (h)">Time (h)</th>
-          <th data-key="turns" class="num-col has-tip" data-tip="Average turns per evolution range">Turns</th>
+          <th data-key="score" class="num-col has-tip" data-tip="F1(Precision, Recall), macro-averaged per evolution range. Primary metric.">Score (%)</th>
+          <th data-key="precision" class="num-col has-tip" data-tip="(fixed+1)/(fixed+broken+1), measures regression avoidance. Macro-avg per evolution range.">Precision (%)</th>
+          <th data-key="recall" class="num-col has-tip" data-tip="fixed/target, measures how many required tests are fixed. Macro-avg per evolution range.">Recall (%)</th>
+          <th data-key="resolve" class="num-col has-tip" data-tip="% of milestones fully resolved (all tests pass). Macro-avg per evolution range.">Resolve (%)</th>
+          <th data-key="cost" class="num-col has-tip" data-tip="Average API cost per evolution range ($)">Cost ($)</th>
+          <th data-key="out_tok_k" class="num-col has-tip" data-tip="Average output tokens per evolution range, incl. reasoning/thinking (K)">Out Tok. (K)</th>
+          <th data-key="time_h" class="num-col has-tip" data-tip="Average wall-clock time per evolution range (hours)">Time (h)</th>
+          <th data-key="turns" class="num-col has-tip" data-tip="Average agent turns per evolution range">Turns</th>
         </tr>
       </thead>
       <tbody id="tbody"></tbody>
@@ -308,7 +308,7 @@ function orgIcon(d) {
   return '<span class="org-badge" style="background:' + d.org_color + '">' + d.org.charAt(0) + '</span>';
 }
 
-let curKey = 'rank', curAsc = true;
+let curKey = 'rank', curAsc = true, curClicks = 0;
 function defaultAsc(key) {
   if (HIGHER.has(key)) return false;
   if (key === 'rank' || key === 'model_display' || key === 'agent_display') return true;
@@ -369,12 +369,24 @@ document.getElementById('officialToggle').addEventListener('change', () => {
   renderTable();
 });
 
-// Sort handler
+// Sort handler: click 1 = default order, click 2 = reverse, click 3 = reset to rank
 document.querySelectorAll('th[data-key]').forEach(th => {
   th.addEventListener('click', () => {
     const key = th.dataset.key;
-    if (key === curKey) { curAsc = !curAsc; }
-    else { curKey = key; curAsc = defaultAsc(key); }
+    if (key === curKey) {
+      curClicks++;
+      if (curClicks >= 3) {
+        // Reset to default
+        curKey = 'rank'; curAsc = true; curClicks = 0;
+        document.querySelectorAll('th[data-key]').forEach(h => h.classList.remove('sort-asc','sort-desc'));
+        document.querySelector('th[data-key="rank"]').classList.add('sort-asc');
+        renderTable();
+        return;
+      }
+      curAsc = !curAsc;
+    } else {
+      curKey = key; curAsc = defaultAsc(key); curClicks = 1;
+    }
     document.querySelectorAll('th[data-key]').forEach(h => h.classList.remove('sort-asc','sort-desc'));
     th.classList.add(curAsc ? 'sort-asc' : 'sort-desc');
     renderTable();
