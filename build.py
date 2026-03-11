@@ -360,9 +360,10 @@ footer a{color:var(--text-2);text-decoration:none}
 footer a:hover{color:var(--accent)}
 
 /* ── Tooltip ──────────────────────────────────────────────── */
-.tip-popup{position:fixed;background:#1c1c2b;color:#e2e8f0;border:1px solid #262640;border-radius:6px;
-  padding:4px 10px;font-size:.75rem;font-weight:400;white-space:nowrap;
-  pointer-events:none;z-index:9999;opacity:0;transition:opacity .12s}
+.tip-popup{position:fixed;background:#262640;color:#e2e8f0;border:1px solid #3d3d5c;border-radius:8px;
+  padding:6px 14px;font-size:.82rem;font-weight:500;white-space:nowrap;
+  pointer-events:none;z-index:9999;opacity:0;transition:opacity .15s;
+  box-shadow:0 4px 16px rgba(0,0,0,.4)}
 .tip-popup.show{opacity:1}
 
 /* ── Toggle ───────────────────────────────────────────────── */
@@ -675,8 +676,8 @@ document.querySelectorAll('th[data-key]').forEach(th => {
       const rect = el.getBoundingClientRect();
       tip.textContent = el.dataset.tip;
       tip.style.left = (rect.left + rect.width/2) + 'px';
-      tip.style.top = (rect.bottom + 6) + 'px';
-      tip.style.transform = 'translateX(-50%)';
+      tip.style.top = (rect.top - 8) + 'px';
+      tip.style.transform = 'translateX(-50%) translateY(-100%)';
       tip.classList.add('show');
     });
     el.addEventListener('mouseleave', () => tip.classList.remove('show'));
