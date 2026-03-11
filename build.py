@@ -100,7 +100,15 @@ CHART_LABELS = {
 
 # ── Per-entry text position overrides (to avoid overlap) ───────────────────
 # Default is 'middle right'.
-CHART_TEXT_POS = {}
+CHART_TEXT_POS = {
+    ("claude-code", "claude-sonnet-4-5-20250929"): "middle left",
+    ("codex", "gpt-5.2"): "middle left",
+    ("codex", "gpt-5.3-codex"): "middle left",
+    ("gemini-cli", "gemini-3-flash"): "middle left",
+    ("openhands", "minimax-m2.5"): "middle left",
+    ("openhands", "kimi-k2.5"): "middle left",
+    ("openhands", "claude-opus-4-6"): "middle left",
+}
 
 # ── Per-entry colors (brightened for dark bg) ───────────────────────────────
 ENTRY_COLORS = {
@@ -125,14 +133,14 @@ ORG_COLORS = {
     "Anthropic": "#D97757",
     "OpenAI": "#10A37F",
     "Google": "#4285F4",
-    "Moonshot AI": "#7C3AED",
-    "MiniMax": "#F97316",
+    "Moonshot AI": "#FFFFFF",
+    "MiniMax": "#F03A5D",
 }
 AGENT_COLORS = {
     "claude-code": {"bg": "rgba(217,119,87,0.15)", "fg": "#D97757"},
     "codex": {"bg": "rgba(16,163,127,0.15)", "fg": "#10A37F"},
     "gemini-cli": {"bg": "rgba(66,133,244,0.15)", "fg": "#4285F4"},
-    "openhands": {"bg": "rgba(167,139,250,0.15)", "fg": "#a78bfa"},
+    "openhands": {"bg": "rgba(255,255,139,0.18)", "fg": "#e6e67a"},
 }
 
 
@@ -334,18 +342,21 @@ tr:hover td{background:rgba(99,102,241,.04)}
 .rank-medal{font-size:1.1rem}
 
 /* org logo */
-.org-logo{width:22px;height:22px;margin-right:8px;vertical-align:middle;flex-shrink:0;border-radius:4px}
+.org-logo{width:22px;min-width:22px;height:22px;margin-right:8px;vertical-align:middle;flex-shrink:0;border-radius:4px;object-fit:contain;object-position:center}
 .org-badge{display:inline-flex;align-items:center;justify-content:center;
   width:22px;height:22px;border-radius:5px;font-size:10px;font-weight:700;
   color:#fff;margin-right:8px;vertical-align:middle;flex-shrink:0}
-.model-cell{display:flex;align-items:center;font-weight:500}
+.model-cell{align-items:center;font-weight:500}
+/* agent icon in table */
+.agent-cell{display:inline-flex;align-items:center;gap:8px;vertical-align:middle}
+.agent-icon{width:22px;height:22px;object-fit:contain;flex-shrink:0;border-radius:4px}
 
 /* agent badge */
 .agent-badge{display:inline-block;padding:2px 10px;border-radius:6px;font-size:.78rem;font-weight:500}
 
 /* score bar */
 .score-cell{position:relative;text-align:right;font-variant-numeric:tabular-nums}
-.score-bar{position:absolute;right:0;top:2px;bottom:2px;border-radius:4px;opacity:.18;z-index:0}
+.score-bar{position:absolute;right:0;top:4px;bottom:4px;border-radius:4px;opacity:.18;z-index:0}
 .score-val{position:relative;z-index:1;font-weight:600}
 .best-val{color:var(--accent-light);font-weight:700}
 
@@ -413,7 +424,7 @@ footer a:hover{color:var(--accent)}
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
     <h2 class="panel-title" style="margin-bottom:0">Overall Cost / Performance</h2>
     <label class="toggle-label">
-      <input type="checkbox" id="officialToggle" checked>
+      <input type="checkbox" id="officialToggle">
       <span class="toggle-text">Official agent only</span>
     </label>
   </div>
@@ -427,10 +438,10 @@ footer a:hover{color:var(--accent)}
     <table>
       <thead>
         <tr>
-          <th data-key="rank" class="sort-asc">#</th>
+          <th data-key="rank">#</th>
           <th data-key="model_display" data-type="str">Model</th>
           <th data-key="agent_display" data-type="str">Agent</th>
-          <th data-key="score" class="num-col has-tip" data-tip="F1 of Precision and Recall. Balances fixing required tests and avoiding regressions.">Score (%)</th>
+          <th data-key="score" class="num-col has-tip sort-desc" data-tip="F1 of Precision and Recall. Balances fixing required tests and avoiding regressions.">Score (%)</th>
           <th data-key="precision" class="num-col has-tip" data-tip="Ratio of bugs fixed without breaking existing tests. Higher means cleaner changes.">Precision (%)</th>
           <th data-key="recall" class="num-col has-tip" data-tip="Ratio of required test cases successfully fixed. Higher means the agent addresses more of the required changes.">Recall (%)</th>
           <th data-key="resolve" class="num-col has-tip" data-tip="% of milestones fully resolved, where all required tests pass with no regressions.">Resolve (%)</th>
@@ -454,6 +465,7 @@ const LOGOS = "__LOGOS__";
 
 // org key mapping
 const ORG_KEY = { 'Anthropic':'anthropic','OpenAI':'openai','Google':'google','Moonshot AI':'moonshot','MiniMax':'minimax' };
+const AGENT_KEY = { 'claude-code':'claude-code','codex':'codex','gemini-cli':'gemini-cli','openhands':'openhands' };
 
 // ═══════════════════════════════════════════════════════════
 // Shared state
@@ -462,8 +474,8 @@ const orgs = [
   { key: 'Anthropic',   color: '#D97757' },
   { key: 'OpenAI',      color: '#10A37F' },
   { key: 'Google',      color: '#4285F4' },
-  { key: 'Moonshot AI', color: '#7C3AED' },
-  { key: 'MiniMax',     color: '#F97316' },
+  { key: 'Moonshot AI', color: '#FFFFFF' },
+  { key: 'MiniMax',     color: '#F03A5D' },
 ];
 
 function getFiltered() {
@@ -490,7 +502,7 @@ function renderChart() {
     return {
       x: pts.map(p => p.cost),
       y: pts.map(p => p.score),
-      text: pts.map(p => p.chart_label),
+      text: pts.map(() => ''),
       customdata: pts.map(p => [
         p.model_display, p.agent_display, p.precision, p.recall,
         p.resolve, p.out_tok_k, p.time_h, p.turns
@@ -514,18 +526,84 @@ function renderChart() {
     };
   }).filter(Boolean);
 
-  const images = fdata.map(d => {
-    const lk = ORG_KEY[d.org];
-    if (!lk || !LOGOS[lk]) return null;
-    return {
-      source: LOGOS[lk],
+  const vGap = iconY * 1.1;
+  const agentIconY = iconY;
+  // Agent colors for pill backgrounds
+  const AGENT_PILL = {
+    'claude-code': 'rgba(217,119,87,0.18)',
+    'codex': 'rgba(16,163,127,0.18)',
+    'gemini-cli': 'rgba(66,133,244,0.18)',
+    'openhands': 'rgba(255,255,139,0.18)',
+  };
+
+  function hexToRgba(hex, a) {
+    const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+    return 'rgba(' + r + ',' + g + ',' + b + ',' + a + ')';
+  }
+
+  // Build pill SVG as data URI
+  function pillSvg(color) {
+    const strokeColor = color.replace(/[\d.]+\)$/, function(m) { return Math.min(parseFloat(m)*1.8, 0.5).toFixed(2) + ')'; });
+    const svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 80"><rect x="2" y="2" width="36" height="76" rx="18" fill="' + color + '" stroke="' + strokeColor + '" stroke-width="1.5"/></svg>';
+    return 'data:image/svg+xml;base64,' + btoa(svg);
+  }
+
+  const pillW = iconX * 1.6;
+  const pillH = iconY * 2 + vGap * 0.6;
+  const images = [];
+  fdata.forEach(d => {
+    const orgK = ORG_KEY[d.org];
+    const agentK = AGENT_KEY[d.agent];
+    const pillColor = (d.agent === 'openhands') ? hexToRgba(d.org_color, 0.25) : (AGENT_PILL[d.agent] || 'rgba(128,128,128,0.15)');
+
+    // Pill background (below icons)
+    images.push({
+      source: pillSvg(pillColor),
       xref: 'x', yref: 'y',
       x: d.cost, y: d.score,
-      sizex: iconX, sizey: iconY,
+      sizex: pillW, sizey: pillH,
       xanchor: 'center', yanchor: 'middle',
-      layer: 'above',
+      layer: 'below',
+    });
+
+    // Model org icon (top)
+    if (orgK && LOGOS[orgK]) {
+      images.push({
+        source: LOGOS[orgK],
+        xref: 'x', yref: 'y',
+        x: d.cost, y: d.score + vGap/2,
+        sizex: iconX, sizey: iconY,
+        xanchor: 'center', yanchor: 'middle',
+        layer: 'above',
+      });
+    }
+    // Agent icon (bottom) — scale down CLI agents
+    if (agentK && LOGOS[agentK]) {
+      const agentScale = (d.agent === 'openhands') ? 1.0 : 0.9;
+      images.push({
+        source: LOGOS[agentK],
+        xref: 'x', yref: 'y',
+        x: d.cost, y: d.score - vGap/2,
+        sizex: iconX * agentScale, sizey: agentIconY * agentScale,
+        xanchor: 'center', yanchor: 'middle',
+        layer: 'above',
+      });
+    }
+  });
+
+  const annotations = fdata.map(d => {
+    const isLeft = (d.chart_textpos || 'middle right') === 'middle left';
+    return {
+      x: d.cost, y: d.score, xref: 'x', yref: 'y',
+      text: d.chart_label + '<br>(' + d.agent_display + ')',
+      showarrow: false,
+      xanchor: isLeft ? 'right' : 'left',
+      yanchor: 'middle',
+      align: isLeft ? 'right' : 'left',
+      xshift: isLeft ? -18 : 18,
+      font: { size: 13, color: '#c8d0dc', family: 'Inter, sans-serif' },
     };
-  }).filter(Boolean);
+  });
 
   const layout = {
     paper_bgcolor: '#0e0e16',
@@ -544,6 +622,7 @@ function renderChart() {
       range: [yMin - yPad, yMax + yPad],
     },
     images: images,
+    annotations: annotations,
     showlegend: false,
     margin: { t: 16, r: 32, b: 56, l: 56 },
     hovermode: 'closest',
@@ -580,8 +659,16 @@ function orgIcon(d) {
   }
   return '<span class="org-badge" style="background:' + d.org_color + '">' + d.org.charAt(0) + '</span>';
 }
+function agentIcon(d) {
+  const ak = AGENT_KEY[d.agent];
+  if (ak && LOGOS[ak]) {
+    const extraStyle = (ak === 'openhands') ? ' style="width:25px;height:25px"' : '';
+    return '<img class="agent-icon"' + extraStyle + ' src="' + LOGOS[ak] + '" alt="' + d.agent + '">';
+  }
+  return '';
+}
 
-let curKey = 'rank', curAsc = true, curClicks = 0;
+let curKey = 'score', curAsc = false, curClicks = 1;
 function defaultAsc(key) {
   if (HIGHER.has(key)) return false;
   if (key === 'rank' || key === 'model_display' || key === 'agent_display') return true;
@@ -619,8 +706,8 @@ function renderTable() {
     return '<tr class="' + topCls + '">' +
       '<td class="rank-cell">' + medal + '</td>' +
       '<td class="model-cell">' + orgIcon(d) + d.model_display + '</td>' +
-      '<td><span class="agent-badge" style="background:' + d.agent_bg + ';color:' + d.agent_fg + '">' + d.agent_display + '</span></td>' +
-      '<td class="score-cell"><div class="score-bar" style="width:' + barW + '%;background:' + d.color + '"></div><span class="score-val' + (isBest(d.score,'score',fdata) ? ' best-val' : '') + '">' + fmtNum(d.score, 2) + '</span></td>' +
+      '<td style="vertical-align:middle"><span class="agent-cell" style="' + (d.agent === 'openhands' ? 'gap:5px' : '') + '">' + agentIcon(d) + '<span class="agent-badge" style="background:' + d.agent_bg + ';color:' + d.agent_fg + '">' + d.agent_display + '</span></span></td>' +
+      '<td class="score-cell"><div class="score-bar" style="width:' + barW + '%;background:' + d.agent_fg + '"></div><span class="score-val' + (isBest(d.score,'score',fdata) ? ' best-val' : '') + '">' + fmtNum(d.score, 2) + '</span></td>' +
       numCell(d.precision, 'precision', 2) +
       numCell(d.recall, 'recall', 2) +
       numCell(d.resolve, 'resolve', 2) +
@@ -650,9 +737,9 @@ document.querySelectorAll('th[data-key]').forEach(th => {
       curClicks++;
       if (curClicks >= 3) {
         // Reset to default
-        curKey = 'rank'; curAsc = true; curClicks = 0;
+        curKey = 'score'; curAsc = false; curClicks = 1;
         document.querySelectorAll('th[data-key]').forEach(h => h.classList.remove('sort-asc','sort-desc'));
-        document.querySelector('th[data-key="rank"]').classList.add('sort-asc');
+        document.querySelector('th[data-key="score"]').classList.add('sort-desc');
         renderTable();
         return;
       }
