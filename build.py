@@ -521,7 +521,8 @@ function renderChart() {
         'Recall: %{customdata[3]:.1f}%<br>' +
         'Resolve: %{customdata[4]:.1f}%<br>' +
         'Output Tok: %{customdata[5]}K<br>' +
-        'Time: %{customdata[6]:.1f}h &middot; Turns: %{customdata[7]}<extra></extra>',
+        'Time: %{customdata[6]:.1f}h<br>' +
+        'Turns: %{customdata[7]}<extra></extra>',
       showlegend: false,
     };
   }).filter(Boolean);
