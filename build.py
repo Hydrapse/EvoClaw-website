@@ -153,9 +153,11 @@ def compute_records():
     trial_df = pd.read_csv(E2E_TRIAL_CSV)
     trial_df["model"] = trial_df["model"].replace(MODEL_ALIASES)
     trial_tokens = {}
+    trial_duration = {}
     for model in trial_df["model"].unique():
         sub = trial_df[trial_df["model"] == model]
         trial_tokens[model] = sub["total_output_tokens"].mean() / 1000
+        trial_duration[model] = sub["total_duration_ms"].mean() / 3_600_000
 
     records = []
 
@@ -172,7 +174,7 @@ def compute_records():
         ws_rec = sub.groupby("workspace")["score_recall"].mean()
         ws_res = sub.groupby("workspace")["is_resolved"].mean()
         ws_cost = sub.groupby("workspace")["m_cost_usd"].sum()
-        ws_dur = sub.groupby("workspace")["m_duration_ms"].sum() / 3_600_000
+        ws_dur = trial_df[trial_df["model"] == model].set_index("workspace")["total_duration_ms"] / 3_600_000
         ws_turns = sub.groupby("workspace")["m_turns"].sum()
 
         records.append({
