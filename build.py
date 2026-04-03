@@ -460,6 +460,9 @@ footer a:hover{color:var(--accent)}
     <a class="nav-btn" href="https://github.com/Hydrapse/EvoClaw" target="_blank">
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 4 1 8 5 12"/><polyline points="11 4 15 8 11 12"/><line x1="9" y1="2" x2="7" y2="14"/></svg>
       Code</a>
+    <a class="nav-btn" href="https://openhands.dev/blog/evoclaw-benchmark" target="_blank">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h12v10H2z"/><path d="M2 6h12"/><path d="M5 3v3"/><path d="M4 8.5h3M4 10.5h3"/><path d="M9 8.5h3M9 10.5h2"/></svg>
+      Blog</a>
   </nav>
 </header>
 
